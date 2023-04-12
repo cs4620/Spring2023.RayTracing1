@@ -54,8 +54,8 @@
         //   - 2 * (o.x ** 2 * c.x ** 2) - 2 * o.y ** 2 * c.y ** 2 - 2 * o.z ** 2 * c.z ** 2
 
         let A = 1;
-        let B = 2*o.dot(d);
-        let C = o.dot(o)-r**2;
+        let B = 2 * o.dot(d);
+        let C = o.dot(o) - r ** 2;
 
         let discriminant = B ** 2 - 4 * A * C;
         if (discriminant < 0) {
@@ -99,6 +99,15 @@
       cross(other) {
         return new Vector3(this.y * other.z - this.z * other.y, this.z * other.x - this.x, other.z + this.x * other.y - this.y * other.x);
       }
+      add(other) {
+        return new Vector3(this.x + other.x, this.y + other.y, this.z + other.z);
+      }
+      negate() {
+        return new Vector3(-this.x, -this.y, -this.z);
+      }
+      minus(other) {
+        return this.add(other.negate());
+      }
     }
 
     function main() {
@@ -128,23 +137,32 @@
 
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-          if(x == 5 && y == 5){
+          if (x == 50 && y == 52) {
             console.log("stop")
           }
           let startX = x - width / 2;
           let startY = y - height / 2;
-          let origin = new Vector3(startX, startY, 0);
+          let origin = new Vector3(startX, startY, 51);
           let direction = new Vector3(0, 0, -1);
-          let s = new Sphere(new Vector3(0, 0, - 50), 50);
+          let s = new Sphere(new Vector3(0, 0, - 51), 50);
           let c = s.intersect(origin, direction);
+
 
           let rayTracedPixel = new Pixel(0, 0, 0);
           if (c) {
-            rayTracedPixel = new Pixel(255, 255, 255);
+            let normal = c.minus(new Vector3(0,0,-51));
+            
+            let nNormalized = normal.normalize();
+            let directionToSun = new Vector3(0, 1, 0);
+            let brightness = nNormalized.dot(directionToSun);
+            brightness *= -1
+            if (brightness < 0)
+              brightness = 0;
+            rayTracedPixel = new Pixel(255 * brightness, 255 * brightness, 255 * brightness);
 
           }
           else {
-            rayTracedPixel = new Pixel(0,0,0);
+            rayTracedPixel = new Pixel(0, 0, 0);
 
           }
 
