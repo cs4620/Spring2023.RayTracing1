@@ -45,33 +45,37 @@
       intersect(o, d) {
         let c = this.center;
         let r = this.radius;
-        let A = d.x ** 2 + d.y ** 2 + d.y ** 2
-        let B = 2 * d.x * (o.x - c.x)
-          + 2 * d.y * (o.y - c.y)
-          + 2 * d.z * (o.x - c.z)
-        let C = o.x ** 2 + o.y ** 2 + o.z ** 2 + c.x ** 2 + c.y ** 2 + c.z ** 2
-          - r ** 2
-          - 2 * (o.x ** 2 * c.x ** 2) - 2 * o.y ** 2 * c.y ** 2 - 2 * o.z ** 2 * c.z ** 2
+        // let A = d.x ** 2 + d.y ** 2 + d.y ** 2
+        // let B = 2 * d.x * (o.x - c.x)
+        //   + 2 * d.y * (o.y - c.y)
+        //   + 2 * d.z * (o.x - c.z)
+        // let C = o.x ** 2 + o.y ** 2 + o.z ** 2 + c.x ** 2 + c.y ** 2 + c.z ** 2
+        //   - r ** 2
+        //   - 2 * (o.x ** 2 * c.x ** 2) - 2 * o.y ** 2 * c.y ** 2 - 2 * o.z ** 2 * c.z ** 2
 
-        let discriminant = B**2-4*A*C;
-        if(discriminant < 0){
+        let A = 1;
+        let B = 2*o.dot(d);
+        let C = o.dot(o)-r**2;
+
+        let discriminant = B ** 2 - 4 * A * C;
+        if (discriminant < 0) {
           return undefined;
         }
         let sqrt = Math.sqrt(discriminant);
-        let t1 = (-B-sqrt)/(2*A)
-        let t2 = (-B+sqrt)/(2*A)
+        let t1 = (-B - sqrt) / (2 * A)
+        let t2 = (-B + sqrt) / (2 * A)
         let t;
-        if(t1 > 0 && t2 > 0){
+        if (t1 > 0 && t2 > 0) {
           t = Math.min(t1, t2);
         }
-        else{
-          if(t1 > 0)
+        else {
+          if (t1 > 0)
             t = t1;
           else
             t = t2;
         }
 
-        return new Vector3(o.x + t*d.x, o.y+t*d.y, o.z+t*d.z);
+        return new Vector3(o.x + t * d.x, o.y + t * d.y, o.z + t * d.z);
       }
     }
 
@@ -117,14 +121,33 @@
       console.log(new Vector3(0, 0, 1).cross(new Vector3(1, 0, 0)))
 
       let sphere = new Sphere(new Vector3(-2, 0, 0), 1);
-      let rayOrigin = new Vector3(0,0,0);
-      let rayDirection = new Vector3(-1,0,0);
+      let rayOrigin = new Vector3(0, 0, 0);
+      let rayDirection = new Vector3(-1, 0, 0);
       let collision = sphere.intersect(rayOrigin, rayDirection)
       console.log(collision);
 
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-          let rayTracedPixel = new Pixel(0, 0, Math.random() * 255);
+          if(x == 5 && y == 5){
+            console.log("stop")
+          }
+          let startX = x - width / 2;
+          let startY = y - height / 2;
+          let origin = new Vector3(startX, startY, 0);
+          let direction = new Vector3(0, 0, -1);
+          let s = new Sphere(new Vector3(0, 0, - 50), 50);
+          let c = s.intersect(origin, direction);
+
+          let rayTracedPixel = new Pixel(0, 0, 0);
+          if (c) {
+            rayTracedPixel = new Pixel(255, 255, 255);
+
+          }
+          else {
+            rayTracedPixel = new Pixel(0,0,0);
+
+          }
+
           image.setPixel(x, y, rayTracedPixel);
 
 
